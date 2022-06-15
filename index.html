@@ -13,42 +13,43 @@
 </head>
 
 <body>
-
     <div class="container-fluid">
-        <div class="header">
-            <img src="img/logo.png" alt="logo" />
+        <div class="row header">
+            <img src="img/logo.png" class="col-2 m-2" alt="logo" />
         </div>
 
         <div class="content" style="background-color: black">
             <div class="row">
-                <div class="col-2 sidebar">
+                <div class="col-sm- col-lg-2 sidebar">
                     sidebar
                 </div>
-                <div class="col-10 main-content">
+                <div class="col-sm-12 col-lg-10 main-content">
                     <form method="post" action="https://bmb-ayoba-api.ey.r.appspot.com">
                         <label for="name">Name:</label>
-                        <input id="name" name="name" required>
+                        <input id="name" name="name" required /><br />
 
                         <label for="surname">Surname:</label>
-                        <input id="surname" name="surname" required>
+                        <input id="surname" name="surname" required /><br />
+
+                        <label for="surname">Cellphone number:</label>
+                        <input type="text" name="cellphone" id="cellphone" /><br />
 
                         <div>
-                            <input type="checkbox" required id="tandcs" name="tandcs"><label for="tandcs">Do you agree
-                                to the terms and
-                                conditions?</label>
+                            <input type="checkbox" required id="tandcs" name="tandcs" />
+                            <label for="tandcs">Do you agree to the terms and conditions?</label>
                         </div>
 
                         <input type="hidden" name="product_id" id="product_id" value="229">
                         <input type="hidden" name="affiliate_id" id="affiliate_id" value="34">
-                        <label for="surname">Cellphone number:</label>
-                        <input type="text" name="cellphone" id="cellphone">
 
-                        <div class="scroller" style="overflow: scroll; height: 600px;">
+                        <div class="scroller" style="overflow: scroll; height: 300px;">
                             <pre id="logger"
-                                style="text-transform:capitalize; background-color: #f5f5f5; margin-bottom: 0;"></pre>
+                                style="text-transform:capitalize; background-color: #f5f5f5; margin-bottom: 0;">
+                            </pre>
                         </div>
 
                         <button id="submit" type="submit">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -60,9 +61,59 @@
     </div>
 
 
-    <script src="/lib/microapp.js"></script>
-    <script>sayHello()</script>
+    <script src="lib/microapp.js"></script>
+    <script>
+        const consoletodiv = (id) => {
+            const log = document.querySelector('#' + id);
 
+            ['log', 'debug', 'info', 'warn', 'error'].forEach(function (verb) {
+                console[verb] = (function (method, verb, log) {
+                    return function () {
+                        method.apply(console, arguments);
+                        const msg = document.createElement('div');
+                        msg.classList.add(verb);
+                        msg.textContent = verb + ': ' + Array.prototype.slice.call(arguments).join(' ');
+                        log.appendChild(msg);
+                    };
+                })(console[verb], verb, log);
+            });
+        }
+        consoletodiv('logger');
+        console.log('Logger loaded...');
+
+        var count = 1;
+        function defer(method) {
+            console.log('defer called: ', count++);
+
+            try {
+                if (Ayoba && Ayoba.hasOwnProperty('getMsisdn') && Ayoba.getMsisdn()) {
+                    console.log('Ayoba loaded...');
+                    method();
+                } else {
+                    console.log('Ayoba not read yet...');
+                    defer(method);
+                }
+            } catch (e) {
+                console.log('An error occurred', e.message);
+            }
+
+        }
+
+        defer(function () {
+            function getMsisdn() {
+                var msisdn = Ayoba.getMsisdn();
+                var input = document.querySelector('#cellphone');
+                input.value = msisdn;
+                return msisdn;
+            }
+
+            console.log(Object.getOwnPropertyNames(Ayoba).join(', '))
+            console.log('Msisdn: ');
+            console.log(Ayoba.getMsisdn())
+            console.log(getMsisdn());
+        })
+
+    </script>
 </body>
 
 </html>
