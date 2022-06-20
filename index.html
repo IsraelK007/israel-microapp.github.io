@@ -55,65 +55,11 @@
         </div>
 
         <div class="footer">
-            Footer section
+            
         </div>
 
     </div>
 
-
-    <script src="lib/microapp.js"></script>
-    <script>
-        const consoletodiv = (id) => {
-            const log = document.querySelector('#' + id);
-
-            ['log', 'debug', 'info', 'warn', 'error'].forEach(function (verb) {
-                console[verb] = (function (method, verb, log) {
-                    return function () {
-                        method.apply(console, arguments);
-                        const msg = document.createElement('div');
-                        msg.classList.add(verb);
-                        msg.textContent = verb + ': ' + Array.prototype.slice.call(arguments).join(' ');
-                        log.appendChild(msg);
-                    };
-                })(console[verb], verb, log);
-            });
-        }
-        consoletodiv('logger');
-        console.log('Logger loaded...');
-
-        var count = 1;
-        function defer(method) {
-            console.log('defer called: ', count++);
-
-            try {
-                if (Ayoba && Ayoba.hasOwnProperty('getMsisdn') && Ayoba.getMsisdn()) {
-                    console.log('Ayoba loaded...');
-                    method();
-                } else {
-                    console.log('Ayoba not read yet...');
-                    defer(method);
-                }
-            } catch (e) {
-                console.log('An error occurred', e.message);
-            }
-
-        }
-
-        defer(function () {
-            function getMsisdn() {
-                var msisdn = Ayoba.getMsisdn();
-                var input = document.querySelector('#cellphone');
-                input.value = msisdn;
-                return msisdn;
-            }
-
-            console.log(Object.getOwnPropertyNames(Ayoba).join(', '))
-            console.log('Msisdn: ');
-            console.log(Ayoba.getMsisdn())
-            console.log(getMsisdn());
-        })
-
-    </script>
 </body>
 
 </html>
